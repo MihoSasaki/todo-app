@@ -15,8 +15,8 @@ interface TodoApiService {
     suspend fun createTodo(@Body todo: TodoItemRequest): TodoItem
 
     @PUT("api/todos/{id}")
-    suspend fun updateTodo(@Path("id") id: Int, @Body todo: TodoItem): TodoItem
+    suspend fun updateTodo(@Path("id") id: Int, @Body todo: TodoItemRequest): TodoItem
 
     @DELETE("api/todos/{id}")
-    suspend fun deleteTodo(@Path("id") id: Int)
+    suspend fun deleteTodo(@Path("id") id: Int): retrofit2.Response<Unit>
 }

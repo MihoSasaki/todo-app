@@ -1,6 +1,7 @@
 package com.todoapp.android
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -93,8 +94,12 @@ class MainActivity : AppCompatActivity() {
     private fun updateTodoStatus(todo: TodoItem) {
         lifecycleScope.launch {
             try {
-                val updatedTodo = todo.copy(completed = !todo.completed)
-                todoApiService.updateTodo(todo.id, updatedTodo)
+                val todoRequest = TodoItemRequest(
+                    title = todo.title,
+                    description = todo.description,
+                    completed = !todo.completed
+                )
+                todoApiService.updateTodo(todo.id, todoRequest)
                 loadTodos() // Reload the list
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity, "Error updating todo: ${e.message}", Toast.LENGTH_LONG).show()
@@ -105,9 +110,14 @@ class MainActivity : AppCompatActivity() {
     private fun deleteTodo(todo: TodoItem) {
         lifecycleScope.launch {
             try {
-                todoApiService.deleteTodo(todo.id)
-                loadTodos() // Reload the list
+                val response = todoApiService.deleteTodo(todo.id)
+                if (response.isSuccessful) {
+                    loadTodos() // Reload the list
+                } else {
+                    Toast.makeText(this@MainActivity, "Error deleting todo: ${response.code()}", Toast.LENGTH_LONG).show()
+                }
             } catch (e: Exception) {
+                Log.d("test", e.message.toString())
                 Toast.makeText(this@MainActivity, "Error deleting todo: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
